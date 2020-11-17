@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"strings"
 
-	py "github.com/mbergin/gotopython/pythonast"
+	py "github.com/RangelReale/gotopython/pythonast"
 )
 
 type XCompiler struct {

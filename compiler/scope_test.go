@@ -1,7 +1,7 @@
 package compiler
 
 import (
-	py "github.com/mbergin/gotopython/pythonast"
+	py "github.com/RangelReale/gotopython/pythonast"
 	"go/token"
 	"go/types"
 	"testing"

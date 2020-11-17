@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"errors"
 	"fmt"
-	"github.com/mbergin/gotopython/compiler"
-	"github.com/mbergin/gotopython/pythonast"
+	"github.com/RangelReale/gotopython/compiler"
+	"github.com/RangelReale/gotopython/pythonast"
 	"go/build"
 	"go/parser"
 	"golang.org/x/tools/go/loader"
@@ -57,7 +57,7 @@ const tmplStr = `
 </head>
 <body>
 	<form id="go" action="." method="POST">
-		<p id="desc">A work-in-progress <a href="https://github.com/mbergin/gotopython">Go to Python transpiler</a>.</p>
+		<p id="desc">A work-in-progress <a href="https://github.com/RangelReale/gotopython">Go to Python transpiler</a>.</p>
 			
 		<p id="convert"><input type="submit" value="Convert"></p>
 		<textarea id="GoCode" name="GoCode">{{.GoCode}}</textarea>

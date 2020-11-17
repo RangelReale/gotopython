@@ -3,7 +3,7 @@ package compiler
 import (
 	"bytes"
 	"fmt"
-	py "github.com/mbergin/gotopython/pythonast"
+	py "github.com/RangelReale/gotopython/pythonast"
 	"go/ast"
 	"reflect"
 	"strconv"

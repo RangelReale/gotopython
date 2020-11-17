@@ -2,7 +2,7 @@ package compiler
 
 import (
 	"fmt"
-	py "github.com/mbergin/gotopython/pythonast"
+	py "github.com/RangelReale/gotopython/pythonast"
 	"go/types"
 )
 

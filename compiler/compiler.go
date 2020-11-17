@@ -5,7 +5,7 @@ import (
 	"go/token"
 	"go/types"
 
-	py "github.com/mbergin/gotopython/pythonast"
+	py "github.com/RangelReale/gotopython/pythonast"
 )
 
 var pySelf = py.Identifier("self")

@@ -6,7 +6,7 @@ import (
 	"go/token"
 	"strings"
 
-	py "github.com/mbergin/gotopython/pythonast"
+	py "github.com/RangelReale/gotopython/pythonast"
 )
 
 func (c *XCompiler) compileStmts(stmts []ast.Stmt) []py.Stmt {
