@@ -16,21 +16,21 @@ func NewWriter(w io.Writer) *Writer {
 
 func (w *Writer) WriteModule(m *Module) {
 	for _, bodyStmt := range m.Body {
-		w.writeStmt(bodyStmt)
+		w.WriteStmt(bodyStmt)
 		w.newline()
 	}
 }
 
-func (w *Writer) writeStmts(stmts []Stmt) {
+func (w *Writer) WriteStmts(stmts []Stmt) {
 	for i, stmt := range stmts {
 		if i > 0 {
 			w.newline()
 		}
-		w.writeStmt(stmt)
+		w.WriteStmt(stmt)
 	}
 }
 
-func (w *Writer) writeStmt(stmt Stmt) {
+func (w *Writer) WriteStmt(stmt Stmt) {
 	switch s := stmt.(type) {
 	case *FunctionDef:
 		w.functionDef(s)
@@ -119,7 +119,7 @@ func (w *Writer) while(s *While) {
 	w.WriteExpr(s.Test)
 	w.write(":")
 	w.indent()
-	w.writeStmts(s.Body)
+	w.WriteStmts(s.Body)
 	w.dedent()
 }
 
@@ -128,17 +128,17 @@ func (w *Writer) ifStmt(s *If) {
 	w.WriteExpr(s.Test)
 	w.write(":")
 	w.indent()
-	w.writeStmts(s.Body)
+	w.WriteStmts(s.Body)
 	w.dedent()
 	if s.Orelse != nil {
 		w.newline()
 		if elif, ok := s.Orelse[0].(*If); ok {
 			w.write("el")
-			w.writeStmt(elif)
+			w.WriteStmt(elif)
 		} else {
 			w.write("else:")
 			w.indent()
-			w.writeStmts(s.Orelse)
+			w.WriteStmts(s.Orelse)
 			w.dedent()
 		}
 	}
@@ -155,7 +155,7 @@ func (w *Writer) forLoop(s *For) {
 		if i > 0 {
 			w.newline()
 		}
-		w.writeStmt(bodyStmt)
+		w.WriteStmt(bodyStmt)
 	}
 	w.dedent()
 }
@@ -163,7 +163,7 @@ func (w *Writer) forLoop(s *For) {
 func (w *Writer) try(s *Try) {
 	w.write("try:")
 	w.indent()
-	w.writeStmts(s.Body)
+	w.WriteStmts(s.Body)
 	w.dedent()
 	for _, handler := range s.Handlers {
 		w.newline()
@@ -178,21 +178,21 @@ func (w *Writer) try(s *Try) {
 		}
 		w.write(":")
 		w.indent()
-		w.writeStmts(handler.Body)
+		w.WriteStmts(handler.Body)
 		w.dedent()
 	}
 	if len(s.Orelse) > 0 {
 		w.newline()
 		w.write("else:")
 		w.indent()
-		w.writeStmts(s.Orelse)
+		w.WriteStmts(s.Orelse)
 		w.dedent()
 	}
 	if len(s.Finalbody) > 0 {
 		w.newline()
 		w.write("finally:")
 		w.indent()
-		w.writeStmts(s.Finalbody)
+		w.WriteStmts(s.Finalbody)
 		w.dedent()
 	}
 }
@@ -548,7 +548,7 @@ func (w *Writer) functionDef(s *FunctionDef) {
 		if i > 0 {
 			w.newline()
 		}
-		w.writeStmt(bodyStmt)
+		w.WriteStmt(bodyStmt)
 	}
 	w.dedent()
 }
@@ -573,7 +573,7 @@ func (w *Writer) classDef(s *ClassDef) {
 		if i > 0 {
 			w.newline()
 		}
-		w.writeStmt(bodyStmt)
+		w.WriteStmt(bodyStmt)
 	}
 	w.dedent()
 }

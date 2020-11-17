@@ -121,7 +121,7 @@ func (c *exprCompiler) compileBasicLit(expr *ast.BasicLit) py.Expr {
 	case token.CHAR:
 		return &py.Str{S: expr.Value}
 	case token.STRING:
-		return &py.Str{S: expr.Value}
+		return &py.Str{S: strings.Replace(expr.Value, "`", "\"", -1)}
 	case token.IMAG:
 		return &py.Num{N: strings.Replace(expr.Value, "i", "j", 1)}
 	}
@@ -156,7 +156,17 @@ func (c *exprCompiler) compileCompositeLit(expr *ast.CompositeLit) py.Expr {
 			if _, ok := expr.Elts[0].(*ast.KeyValueExpr); ok {
 				for _, elt := range expr.Elts {
 					kv := elt.(*ast.KeyValueExpr)
-					id := c.identifier(kv.Key.(*ast.Ident))
+					var id py.Identifier
+					switch kvtype := kv.Key.(type) {
+					case *ast.Ident:
+						id = c.identifier(kvtype)
+					case *ast.BasicLit:
+						// TODO
+						//id = c.compileBasicLit(kvtype)
+						id = py.Identifier(kvtype.Value)
+					default:
+						panic(fmt.Sprintf("Unknown type %T", kv.Key))
+					}
 					keyword := py.Keyword{
 						Arg:   &id,
 						Value: c.compileExpr(kv.Value)}

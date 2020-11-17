@@ -186,7 +186,7 @@ func (c *XCompiler) CompileFuncDecl(decl *ast.FuncDecl) FuncDecl {
 
 func (c *XCompiler) zeroValue(typ types.Type) py.Expr {
 	switch t := typ.(type) {
-	case *types.Pointer, *types.Slice, *types.Map, *types.Signature, *types.Interface, *types.Chan:
+	case *types.Pointer, *types.Slice, *types.Map, *types.Signature, *types.Interface, *types.Struct, *types.Chan:
 		return pyNone
 	case *types.Basic:
 		switch {
@@ -293,6 +293,10 @@ func (c *XCompiler) compileSignature(ident *ast.Ident, typ *types.Signature) py.
 	return nil
 }
 
+func (c *XCompiler) compileMapType(ident *ast.Ident, typ *types.Map) py.Stmt {
+	return nil
+}
+
 func (c *XCompiler) CompileTypeSpec(spec *ast.TypeSpec) py.Stmt {
 	switch t := c.TypeOf(spec.Type).(type) {
 	case *types.Struct:
@@ -309,6 +313,8 @@ func (c *XCompiler) CompileTypeSpec(spec *ast.TypeSpec) py.Stmt {
 		return c.compileStructType(spec.Name, types.NewStruct(fields, nil))
 	case *types.Signature:
 		return c.compileSignature(spec.Name, t)
+	case *types.Map:
+		return c.compileMapType(spec.Name, t)
 	default:
 		panic(c.err(spec, "unknown TypeSpec: %T", t))
 	}
