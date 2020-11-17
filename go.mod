@@ -1,4 +1,4 @@
-module github.com/mbergin/gotopython
+module github.com/RangelReale/gotopython
 
 go 1.15
 
