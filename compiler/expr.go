@@ -140,6 +140,9 @@ func (c *exprCompiler) compileUnaryExpr(expr *ast.UnaryExpr) py.Expr {
 		return &py.UnaryOpExpr{Op: py.USub, Operand: c.compileExpr(expr.X)}
 	case token.XOR:
 		return &py.UnaryOpExpr{Op: py.Invert, Operand: c.compileExpr(expr.X)}
+	case token.ARROW:
+		// TODO
+		return nil
 	}
 	panic(c.err(expr, "unknown UnaryExpr: %v", expr.Op))
 }
@@ -276,6 +279,9 @@ func (c *exprCompiler) compileCallExpr(expr *ast.CallExpr) py.Expr {
 				}
 			case *types.Map:
 				return &py.Dict{}
+			case *types.Chan:
+				// TODO
+				return &py.Str{""}
 			default:
 				panic(c.err(expr, "bad type in make(): %T", t))
 			}

@@ -3,6 +3,8 @@ It can currently only compile toy programs.
 
 [![Build Status](https://travis-ci.org/mbergin/gotopython.svg?branch=master)](https://travis-ci.org/mbergin/gotopython)
 
+Fork of [mbergin/gotopython](https://github.com/mbergin/gotopython).
+
 # Example usage
 
 This will compile the package at path `./mypackage` into a Python module `mypackage.py`:

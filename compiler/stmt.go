@@ -333,6 +333,9 @@ func (c *Compiler) compileBranchStmt(s *ast.BranchStmt) []py.Stmt {
 		return []py.Stmt{&py.Continue{}}
 	case token.FALLTHROUGH:
 		return []py.Stmt{&py.ExprStmt{Value: &py.Call{Func: &py.Name{Id: py.Identifier("_TODO_fallthrough")}}}}
+	case token.GOTO:
+		// TODO
+		return []py.Stmt{&py.Pass{}}
 	default:
 		panic(c.err(s, "unknown BranchStmt %v", s.Tok))
 	}
@@ -468,6 +471,12 @@ func (c *Compiler) compileStmt(stmt ast.Stmt) []py.Stmt {
 	case *ast.LabeledStmt:
 		// TODO labels
 		pyStmts = c.compileStmt(s.Stmt)
+	case *ast.SendStmt:
+		// TODO
+		pyStmts = []py.Stmt{}
+	case *ast.GoStmt:
+		// TODO
+		pyStmts = []py.Stmt{}
 	default:
 		panic(c.err(stmt, "unknown Stmt: %T", stmt))
 	}

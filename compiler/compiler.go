@@ -207,6 +207,8 @@ func (c *Compiler) zeroValue(typ types.Type) py.Expr {
 			return &py.Num{N: "0"}
 		case t.Info()&types.IsFloat != 0:
 			return &py.Num{N: "0.0"}
+		case t.Info()&types.IsComplex != 0:
+			return &py.Num{N: "0.0"}
 		default:
 			panic(fmt.Sprintf("unknown basic type %#v", t))
 		}
@@ -294,6 +296,10 @@ func (c *Compiler) compileInterfaceType(ident *ast.Ident, typ *types.Interface) 
 	return nil
 }
 
+func (c *Compiler) compileSignature(ident *ast.Ident, typ *types.Signature) py.Stmt {
+	return nil
+}
+
 func (c *Compiler) compileTypeSpec(spec *ast.TypeSpec) py.Stmt {
 	switch t := c.TypeOf(spec.Type).(type) {
 	case *types.Struct:
@@ -308,6 +314,8 @@ func (c *Compiler) compileTypeSpec(spec *ast.TypeSpec) py.Stmt {
 	case *types.Basic, *types.Slice:
 		fields := []*types.Var{types.NewField(token.NoPos, nil, "value", t, false)}
 		return c.compileStructType(spec.Name, types.NewStruct(fields, nil))
+	case *types.Signature:
+		return c.compileSignature(spec.Name, t)
 	default:
 		panic(c.err(spec, "unknown TypeSpec: %T", t))
 	}
