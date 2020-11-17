@@ -63,7 +63,7 @@ func (c *Compiler) compileGenDecl(decl *ast.GenDecl, module *Module) {
 func (c *Compiler) compileDecl(decl ast.Decl, module *Module) {
 	switch d := decl.(type) {
 	case *ast.FuncDecl:
-		funcDecl := c.CompileFuncDecl(d)
+		funcDecl := c.CompileFuncDecl(d, true)
 		if funcDecl.Class != py.Identifier("") {
 			module.Methods[funcDecl.Class] = append(module.Methods[funcDecl.Class], funcDecl.Def)
 		} else {

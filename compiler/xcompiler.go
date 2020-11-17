@@ -163,7 +163,7 @@ func makeDocString(g *ast.CommentGroup) *py.DocString {
 	return &py.DocString{Lines: strings.Split(text, "\n")}
 }
 
-func (c *XCompiler) CompileFuncDecl(decl *ast.FuncDecl) FuncDecl {
+func (c *XCompiler) CompileFuncDecl(decl *ast.FuncDecl, withDoc bool) FuncDecl {
 	var recvType py.Identifier
 	var recv *ast.Ident
 	if decl.Recv != nil {
@@ -178,7 +178,7 @@ func (c *XCompiler) CompileFuncDecl(decl *ast.FuncDecl) FuncDecl {
 	}
 	funcDef := c.CompileFunc(c.identifier(decl.Name), decl.Type, decl.Body, decl.Recv != nil, recv)
 
-	if decl.Doc != nil {
+	if withDoc && decl.Doc != nil {
 		funcDef.Body = append([]py.Stmt{makeDocString(decl.Doc)}, funcDef.Body...)
 	}
 	return FuncDecl{Class: recvType, Def: funcDef}
@@ -347,7 +347,7 @@ func (c *XCompiler) CompileDecl(decl ast.Decl) []py.Stmt {
 
 	switch d := decl.(type) {
 	case *ast.FuncDecl:
-		funcDecl := c.CompileFuncDecl(d)
+		funcDecl := c.CompileFuncDecl(d, true)
 		ret = append(ret, funcDecl.Def)
 	case *ast.GenDecl:
 		ret = append(ret, c.CompileGenDecl(d)...)
