@@ -10,11 +10,11 @@ import (
 )
 
 type exprCompiler struct {
-	*Compiler
+	*XCompiler
 	stmts []py.Stmt
 }
 
-func (c *Compiler) compileIdent(ident *ast.Ident) py.Expr {
+func (c *XCompiler) compileIdent(ident *ast.Ident) py.Expr {
 	if c.isBlank(ident) {
 		return &py.Name{Id: py.Identifier("_")}
 	}
@@ -349,7 +349,7 @@ func (c *exprCompiler) addStmt(stmt py.Stmt) {
 
 func (c *exprCompiler) compileFuncLit(expr *ast.FuncLit) py.Expr {
 	id := c.tempID("func")
-	funcDef := c.compileFunc(id, expr.Type, expr.Body, false, nil)
+	funcDef := c.CompileFunc(id, expr.Type, expr.Body, false, nil)
 	c.addStmt(funcDef)
 	return &py.Name{Id: id}
 }

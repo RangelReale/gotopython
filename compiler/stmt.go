@@ -2,13 +2,14 @@ package compiler
 
 import (
 	"fmt"
-	py "github.com/mbergin/gotopython/pythonast"
 	"go/ast"
 	"go/token"
 	"strings"
+
+	py "github.com/mbergin/gotopython/pythonast"
 )
 
-func (c *Compiler) compileStmts(stmts []ast.Stmt) []py.Stmt {
+func (c *XCompiler) compileStmts(stmts []ast.Stmt) []py.Stmt {
 	var pyStmts []py.Stmt
 	for _, blockStmt := range stmts {
 		pyStmts = append(pyStmts, c.compileStmt(blockStmt)...)
@@ -16,12 +17,12 @@ func (c *Compiler) compileStmts(stmts []ast.Stmt) []py.Stmt {
 	return pyStmts
 }
 
-func (c *Compiler) isBlank(expr ast.Expr) bool {
+func (c *XCompiler) isBlank(expr ast.Expr) bool {
 	ident, ok := expr.(*ast.Ident)
 	return ok && ident.Name == "_"
 }
 
-func (c *Compiler) compileRangeStmt(stmt *ast.RangeStmt) []py.Stmt {
+func (c *XCompiler) compileRangeStmt(stmt *ast.RangeStmt) []py.Stmt {
 	e := c.exprCompiler()
 	body := c.compileStmt(stmt.Body)
 	if len(body) == 0 {
@@ -73,7 +74,7 @@ func (c *Compiler) compileRangeStmt(stmt *ast.RangeStmt) []py.Stmt {
 	return append(e.stmts, pyStmt)
 }
 
-func (c *Compiler) compileIncDecStmt(s *ast.IncDecStmt) []py.Stmt {
+func (c *XCompiler) compileIncDecStmt(s *ast.IncDecStmt) []py.Stmt {
 	e := c.exprCompiler()
 	var op py.Operator
 	if s.Tok == token.INC {
@@ -89,7 +90,7 @@ func (c *Compiler) compileIncDecStmt(s *ast.IncDecStmt) []py.Stmt {
 	return append(e.stmts, stmt)
 }
 
-func (c *Compiler) compileValueSpec(spec *ast.ValueSpec) []py.Stmt {
+func (c *XCompiler) CompileValueSpec(spec *ast.ValueSpec) []py.Stmt {
 	e := c.exprCompiler()
 	var targets []py.Expr
 	var values []py.Expr
@@ -124,16 +125,16 @@ func (c *Compiler) compileValueSpec(spec *ast.ValueSpec) []py.Stmt {
 	return append(e.stmts, stmt)
 }
 
-func (c *Compiler) compileDeclStmt(s *ast.DeclStmt) []py.Stmt {
+func (c *XCompiler) compileDeclStmt(s *ast.DeclStmt) []py.Stmt {
 	var stmts []py.Stmt
 	genDecl := s.Decl.(*ast.GenDecl)
 	for _, spec := range genDecl.Specs {
 		var compiled []py.Stmt
 		switch spec := spec.(type) {
 		case *ast.ValueSpec:
-			compiled = c.compileValueSpec(spec)
+			compiled = c.CompileValueSpec(spec)
 		case *ast.TypeSpec:
-			compiled = []py.Stmt{c.compileTypeSpec(spec)}
+			compiled = []py.Stmt{c.CompileTypeSpec(spec)}
 		default:
 			panic(c.err(s, "unknown Spec: %T", spec))
 		}
@@ -142,7 +143,7 @@ func (c *Compiler) compileDeclStmt(s *ast.DeclStmt) []py.Stmt {
 	return stmts
 }
 
-func (c *Compiler) augmentedOp(t token.Token) py.Operator {
+func (c *XCompiler) augmentedOp(t token.Token) py.Operator {
 	switch t {
 	case token.ADD_ASSIGN: // +=
 		return py.Add
@@ -170,7 +171,7 @@ func (c *Compiler) augmentedOp(t token.Token) py.Operator {
 	}
 }
 
-func (c *Compiler) compileAssignStmt(s *ast.AssignStmt) []py.Stmt {
+func (c *XCompiler) compileAssignStmt(s *ast.AssignStmt) []py.Stmt {
 	e := c.exprCompiler()
 	var stmt py.Stmt
 	if s.Tok == token.ASSIGN || s.Tok == token.DEFINE {
@@ -197,7 +198,7 @@ func (c *Compiler) compileAssignStmt(s *ast.AssignStmt) []py.Stmt {
 	return append(e.stmts, stmt)
 }
 
-func (c *Compiler) compileSwitchStmt(s *ast.SwitchStmt) []py.Stmt {
+func (c *XCompiler) compileSwitchStmt(s *ast.SwitchStmt) []py.Stmt {
 	e := c.exprCompiler()
 	var stmts []py.Stmt
 	if s.Init != nil {
@@ -241,7 +242,7 @@ func (c *Compiler) compileSwitchStmt(s *ast.SwitchStmt) []py.Stmt {
 	return stmts
 }
 
-func (c *Compiler) compileTypeSwitchStmt(s *ast.TypeSwitchStmt) []py.Stmt {
+func (c *XCompiler) compileTypeSwitchStmt(s *ast.TypeSwitchStmt) []py.Stmt {
 	e := c.exprCompiler()
 	var stmts []py.Stmt
 
@@ -310,7 +311,7 @@ func (c *Compiler) compileTypeSwitchStmt(s *ast.TypeSwitchStmt) []py.Stmt {
 	return stmts
 }
 
-func (c *Compiler) compileIfStmt(s *ast.IfStmt) []py.Stmt {
+func (c *XCompiler) compileIfStmt(s *ast.IfStmt) []py.Stmt {
 	e := c.exprCompiler()
 	var stmts []py.Stmt
 	if s.Init != nil {
@@ -325,7 +326,7 @@ func (c *Compiler) compileIfStmt(s *ast.IfStmt) []py.Stmt {
 	return stmts
 }
 
-func (c *Compiler) compileBranchStmt(s *ast.BranchStmt) []py.Stmt {
+func (c *XCompiler) compileBranchStmt(s *ast.BranchStmt) []py.Stmt {
 	switch s.Tok {
 	case token.BREAK:
 		return []py.Stmt{&py.Break{}}
@@ -341,7 +342,7 @@ func (c *Compiler) compileBranchStmt(s *ast.BranchStmt) []py.Stmt {
 	}
 }
 
-func (c *Compiler) compileForStmt(s *ast.ForStmt) []py.Stmt {
+func (c *XCompiler) compileForStmt(s *ast.ForStmt) []py.Stmt {
 	e := c.exprCompiler()
 	var stmts []py.Stmt
 	body := c.compileStmt(s.Body)
@@ -365,7 +366,7 @@ func (c *Compiler) compileForStmt(s *ast.ForStmt) []py.Stmt {
 	return stmts
 }
 
-func (c *Compiler) compileExprToStmt(e ast.Expr) []py.Stmt {
+func (c *XCompiler) compileExprToStmt(e ast.Expr) []py.Stmt {
 	ec := c.exprCompiler()
 	var stmt py.Stmt
 	switch e := e.(type) {
@@ -401,13 +402,13 @@ func (c *Compiler) compileExprToStmt(e ast.Expr) []py.Stmt {
 	return append(ec.stmts, stmt)
 }
 
-func (c *Compiler) compileReturnStmt(s *ast.ReturnStmt) []py.Stmt {
+func (c *XCompiler) compileReturnStmt(s *ast.ReturnStmt) []py.Stmt {
 	e := c.exprCompiler()
 	stmt := &py.Return{Value: e.compileExprsTuple(s.Results)}
 	return append(e.stmts, stmt)
 }
 
-func (c *Compiler) compileExprStmt(s *ast.ExprStmt) []py.Stmt {
+func (c *XCompiler) compileExprStmt(s *ast.ExprStmt) []py.Stmt {
 	if compiled := c.compileExprToStmt(s.X); compiled != nil {
 		return compiled
 	}
@@ -430,14 +431,17 @@ func appendToList(list py.Expr, item py.Expr) py.Stmt {
 	}
 }
 
-func (c *Compiler) compileDeferStmt(s *ast.DeferStmt) []py.Stmt {
+func (c *XCompiler) compileDeferStmt(s *ast.DeferStmt) []py.Stmt {
+	if !c.global {
+		return nil
+	}
 	e := c.exprCompiler()
 	f := e.compileExpr(s.Call.Fun)
 	args := &py.Tuple{Elts: e.compileExprs(s.Call.Args)}
 	return append(e.stmts, appendToList(c.defers, makeTuple(f, args)))
 }
 
-func (c *Compiler) compileStmt(stmt ast.Stmt) []py.Stmt {
+func (c *XCompiler) compileStmt(stmt ast.Stmt) []py.Stmt {
 	var pyStmts []py.Stmt
 	switch s := stmt.(type) {
 	case *ast.ReturnStmt:
@@ -481,17 +485,18 @@ func (c *Compiler) compileStmt(stmt ast.Stmt) []py.Stmt {
 		panic(c.err(stmt, "unknown Stmt: %T", stmt))
 	}
 
-	if c.commentMap != nil {
-		var commentStmts []py.Stmt
-		for _, commentGroup := range (*c.commentMap)[stmt] {
-			text := commentGroup.Text()
-			text = strings.TrimRight(text, "\n")
-			for _, line := range strings.Split(text, "\n") {
-				commentStmts = append(commentStmts, &py.Comment{Text: " " + line})
+	if c.global {
+		if c.commentMap != nil {
+			var commentStmts []py.Stmt
+			for _, commentGroup := range (*c.commentMap)[stmt] {
+				text := commentGroup.Text()
+				text = strings.TrimRight(text, "\n")
+				for _, line := range strings.Split(text, "\n") {
+					commentStmts = append(commentStmts, &py.Comment{Text: " " + line})
+				}
 			}
+			pyStmts = append(commentStmts, pyStmts...)
 		}
-		pyStmts = append(commentStmts, pyStmts...)
 	}
-
 	return pyStmts
 }

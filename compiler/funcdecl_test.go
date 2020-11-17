@@ -231,7 +231,7 @@ func TestFuncDecl(t *testing.T) {
 			c := NewCompiler(&pkg.Info, nil)
 
 			goFuncDecl := file.Decls[len(file.Decls)-1].(*ast.FuncDecl)
-			pyFuncDecl := c.compileFuncDecl(goFuncDecl)
+			pyFuncDecl := c.CompileFuncDecl(goFuncDecl)
 			if !reflect.DeepEqual(pyFuncDecl, test.python) {
 				t.Errorf("%q\nwant:\n%s\ngot:\n%s\n", test.golang,
 					pythonCode([]py.Stmt{test.python.Def}), pythonCode([]py.Stmt{pyFuncDecl.Def}))
