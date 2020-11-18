@@ -24,7 +24,7 @@ type Compiler struct {
 }
 
 func NewCompiler(typeInfo *types.Info, fileSet *token.FileSet) *Compiler {
-	return &Compiler{XCompiler: NewXCompiler(typeInfo, fileSet, true)}
+	return &Compiler{XCompiler: NewXCompiler(typeInfo, fileSet, true, false)}
 }
 
 func (c Compiler) withCommentMap(cmap *ast.CommentMap) *Compiler {

@@ -18,6 +18,11 @@ func (c *XCompiler) compileIdent(ident *ast.Ident) py.Expr {
 	if c.isBlank(ident) {
 		return &py.Name{Id: py.Identifier("_")}
 	}
+
+	if c.lastrecv != nil && ident.Obj != nil && c.lastrecv.Obj == ident.Obj {
+		return &py.Name{Id: c.tempID("self")}
+	}
+
 	obj := c.ObjectOf(ident)
 	if obj == nil {
 		panic(fmt.Sprintf("Ident has no object: %#v", ident))

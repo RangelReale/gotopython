@@ -18,10 +18,12 @@ type XCompiler struct {
 	commentMap *ast.CommentMap
 	defers     py.Expr
 	global     bool
+	detectSelf bool
+	lastrecv *ast.Ident
 }
 
-func NewXCompiler(typeInfo *types.Info, fileSet *token.FileSet, global bool) *XCompiler {
-	return &XCompiler{Info: typeInfo, scope: newScope(), FileSet: fileSet, global: global}
+func NewXCompiler(typeInfo *types.Info, fileSet *token.FileSet, global bool, detectSelf bool) *XCompiler {
+	return &XCompiler{Info: typeInfo, scope: newScope(), FileSet: fileSet, global: global, detectSelf: detectSelf}
 }
 
 func (c XCompiler) nestedCompiler() *XCompiler {
@@ -104,7 +106,7 @@ func (parent *XCompiler) CompileFunc(name py.Identifier, typ *ast.FuncType, body
 
 	// add an empty list of defer functions before the function body if this function uses defer
 	var deferInit py.Stmt
-	if parent.global {
+	if c.global {
 		deferInit = c.addDefers(body)
 	}
 
@@ -123,11 +125,15 @@ func (parent *XCompiler) CompileFunc(name py.Identifier, typ *ast.FuncType, body
 		}
 	}
 
+	if c.detectSelf {
+		c.lastrecv = recv
+	}
 	for _, stmt := range body.List {
 		pyBody = append(pyBody, c.compileStmt(stmt)...)
 	}
+	c.lastrecv = nil
 
-	if parent.global {
+	if c.global {
 		// Execute defers
 		if deferInit != nil {
 			fun := &py.Name{Id: c.tempID("fun")}
