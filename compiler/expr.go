@@ -20,7 +20,7 @@ func (c *XCompiler) compileIdent(ident *ast.Ident) py.Expr {
 	}
 
 	if c.lastrecv != nil && ident.Obj != nil && c.lastrecv.Obj == ident.Obj {
-		return &py.Name{Id: c.tempID("self")}
+		return &py.Name{Id: py.Identifier("self")}
 	}
 
 	obj := c.ObjectOf(ident)
